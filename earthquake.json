@@ -1,0 +1,44 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "width": 800,
+  "height": 600,
+  "title": "Earthquake",
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/amykohwangjune/FIT3179/main/map.geo.json",
+        "format": {
+          "type":"topojson",
+          "feature": "map"
+        }
+      },
+      "projection": {"type":"mercator"},
+      "mark": {"type": "geoshape", "fill": "lightgray", "stroke": "white"}
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/amykohwangjune/FIT3179/main/earthquake.csv",
+        "format": {
+          "type":"csv"
+        }
+      },
+      "mark": {"type": "circle"},
+      "encoding": {
+        "longitude": {"field": "longitude", "type": "quantitative"},
+        "latitude": {"field": "latitude", "type": "quantitative"},
+        "size": {
+          "field": "mag",
+          "type": "quantitative",
+          "scale": {"domain": [4,8]},
+          "legend": {"title": "Magnitude"}
+        },
+        "color": {
+          "field": "depth",
+          "type": "quantitative",
+          "scale": {"scheme": "reds"},
+          "legend": {"title": "Depth"}
+        }
+      }
+    }
+  ]
+}
