@@ -1,0 +1,84 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "width": 500,
+  "height": 400,
+  "data": {
+    "url": "https://raw.githubusercontent.com/amykohwangjune/FIT3179/main/COVID_19_10_Oct_2020.csv",
+    "format": {
+      "type":"csv"
+    }
+  },
+  "transform": [
+    {"filter": "datum.Confirmed > 0"},
+    {"filter": "datum.Deaths > 0"} 
+  ],
+  "layer": [
+    {
+      "mark": "circle",
+      "encoding":{
+        "color": {
+          "field": "Continent",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "North America",
+              "South America",
+              "Europe",
+              "Africa",
+              "Asia",
+              "Oceania"
+            ],
+            "range": [
+              "#66c2a5",
+              "#fc8d62",
+              "#8da0cb",
+              "#e78ac3",
+              "#a6d854",
+              "#ffd92f"
+            ]
+          }
+        },
+        "opacity": {"value": 0.6},
+        "size": {
+          "field": "Population",
+          "type": "quantitative",
+          "scale": {
+            "type": "threshold",
+            "domain": [1000000, 10000000,50000000,100000000,500000000],
+            "range": [10, 50, 150, 200, 300, 400]
+          },
+          "legend": {
+            "format": ".1s"
+          }
+        }
+      }
+    },
+    {
+      "mark": "text"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "Confirmed",
+      "type": "quantitative",
+      "scale": {
+        "type": "log",
+        "domain": [1, 100000000]
+      },
+      "axis": {
+        "tickCount": 7
+      }
+    },
+    "y": {
+      "field": "Deaths",
+      "type": "quantitative",
+      "scale": {
+        "type": "log",
+        "domain": [1, 10000000]
+      },
+      "axis": {
+        "tickCount": 6
+      }
+    }
+  }
+}
