@@ -2,19 +2,68 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
   "width": 500,
   "height": 400,
+  "title": "COVID-19 Cases per Country (13 Oct 2020)",
   "data": {
     "url": "https://raw.githubusercontent.com/amykohwangjune/FIT3179/main/COVID_19_10_Oct_2020.csv",
     "format": {
       "type":"csv"
     }
   },
+  "params": [
+    {
+      "name": "minimum_population",
+      "value": 0,
+      "bind": {
+        "input": "range",
+        "min": 0,
+        "max": 100000000,
+        "step": 1000000,
+        "name": "Minimum Population"
+      }
+    },
+    {
+      "name": "continent_selection",
+      "bind": {
+        "input": "select",
+        "labels": [
+          "Show All",
+          "North America",
+          "South America",
+          "Europe",
+          "Africa",
+          "Asia",
+          "Oceania"
+        ],
+        "options": [
+          null,
+          "North America",
+          "South America",
+          "Europe",
+          "Africa",
+          "Asia",
+          "Oceania"
+        ],
+        "name": "Select Continent"
+      }
+    }
+  ],
   "transform": [
     {"filter": "datum.Confirmed > 0"},
-    {"filter": "datum.Deaths > 0"} 
+    {"filter": "datum.Deaths > 0"},
+    {"filter": "datum.Population > minimum_population"},
+    {"filter": "datum.Continent == continent_selection || continent_selection == null"},
+    {"calculate": "datum.Confirmed/datum.Population * 10000", "as": "CasesPer10k"} 
   ],
   "layer": [
     {
       "mark": "circle",
+      "selection": {
+        "continent_highlight": {
+          "type": "multi",
+          "fields":["Continent"],
+          "bind": "legend"
+        }
+      },
       "encoding":{
         "color": {
           "field": "Continent",
@@ -38,7 +87,13 @@
             ]
           }
         },
-        "opacity": {"value": 0.6},
+        "opacity": {
+          "condition": {
+            "selection": "continent_highlight",
+            "value": 0.7
+          },
+          "value": 0.1
+        },
         "size": {
           "field": "Population",
           "type": "quantitative",
@@ -54,7 +109,20 @@
       }
     },
     {
-      "mark": "text"
+      "mark": {
+        "type": "text",
+        "fontStyle": "italic",
+        "fontSize": 11.5,
+        "align": "right",
+        "baseline": "middle",
+        "dx": -15
+      },
+      "transform": [
+        {"filter": "datum.Country == 'Australia' || datum.Country == 'United States' || datum.Country == 'Italy' || datum.Country == 'New Zealand'"}
+      ],
+      "encoding": {
+        "text": {"field": "Country"}
+      }
     }
   ],
   "encoding": {
@@ -66,7 +134,8 @@
         "domain": [1, 100000000]
       },
       "axis": {
-        "tickCount": 7
+        "tickCount": 7,
+        "title": "Confirmed Cases"
       }
     },
     "y": {
@@ -74,11 +143,19 @@
       "type": "quantitative",
       "scale": {
         "type": "log",
-        "domain": [1, 10000000]
+        "domain": [1, 1000000]
       },
       "axis": {
         "tickCount": 6
       }
-    }
+    },
+    "tooltip": [
+      {"field": "Country", "type": "nominal"},
+      {"field": "Confirmed", "type": "quantitative", "title": "Confirmed Cases", "format": ","},
+      {"field": "Active", "type": "quantitative", "title": "Active Cases", "format": ","},
+      {"field": "Deaths", "type": "quantitative", "format": ","},
+      {"field": "Recovered", "type": "quantitative", "format": ","},
+      {"field": "CasesPer10k", "type": "quantitative", "format": ".2f", "title": "Cases per 10000 people"}
+    ]
   }
 }
